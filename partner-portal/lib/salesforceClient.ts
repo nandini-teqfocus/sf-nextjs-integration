@@ -12,8 +12,16 @@ interface CachedToken {
 let cachedToken: CachedToken | null = null;
 
 function getPrivateKey(): string {
-  if (process.env.SF_PRIVATE_KEY) {
-    return process.env.SF_PRIVATE_KEY.replace(/\\n/g, '\n');
+  const rawKey = process.env.SF_PRIVATE_KEY || process.env.SALESFORCE_PRIVATE_KEY;
+  if (rawKey && rawKey.trim()) {
+    let keyStr = rawKey.trim();
+    // Remove surrounding quotes if present
+    if ((keyStr.startsWith('"') && keyStr.endsWith('"')) || (keyStr.startsWith("'") && keyStr.endsWith("'"))) {
+      keyStr = keyStr.slice(1, -1);
+    }
+    // Replace literal escaped \n with actual newlines
+    keyStr = keyStr.replace(/\\n/g, '\n');
+    return keyStr;
   }
 
   const keyPath = process.env.SF_PRIVATE_KEY_PATH || '../certs/server.key';
