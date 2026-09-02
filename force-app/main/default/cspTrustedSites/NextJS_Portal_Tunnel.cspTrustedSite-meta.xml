@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CspTrustedSite xmlns="http://soap.sforce.com/2006/04/metadata">
     <context>Communities</context>
-    <description>CSP Trusted Site for Next.js Partner Portal tunnel</description>
-    <endpointUrl>https://sf-partner-poc-2026.loca.lt</endpointUrl>
+    <description>CSP Trusted Site for Next.js Partner Portal production on Vercel</description>
+    <endpointUrl>https://sf-nextjs-integration.vercel.app</endpointUrl>
     <isActive>true</isActive>
     <isApplicableToConnectSrc>true</isApplicableToConnectSrc>
     <isApplicableToFontSrc>true</isApplicableToFontSrc>

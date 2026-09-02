@@ -3,7 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import Id from '@salesforce/user/Id';
 
 export default class NextjsPortalHost extends LightningElement {
-    @api nextjsBaseUrl = 'https://sf-partner-poc-2026.loca.lt';
+    @api nextjsBaseUrl = 'https://sf-nextjs-integration.vercel.app';
     @api defaultRoute = '/applications';
     
     currentUserId = Id;

@@ -13,7 +13,7 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightningCommunity__Default,lightning__AppPage,lightning__HomePage">
-            <property name="nextjsBaseUrl" type="String" label="Next.js Base URL" default="https://sf-partner-poc-2026.loca.lt" description="Base HTTPS URL of the Next.js application"/>
+            <property name="nextjsBaseUrl" type="String" label="Next.js Base URL" default="https://sf-nextjs-integration.vercel.app" description="Base HTTPS URL of the Next.js application"/>
             <property name="defaultRoute" type="String" label="Default Route" default="/applications" description="Initial route to load in the iframe"/>
         </targetConfig>
     </targetConfigs>

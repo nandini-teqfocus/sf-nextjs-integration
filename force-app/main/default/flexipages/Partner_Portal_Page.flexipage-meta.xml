@@ -9,7 +9,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>nextjsBaseUrl</name>
-                    <value>https://sf-partner-poc-2026.loca.lt</value>
+                    <value>https://sf-nextjs-integration.vercel.app</value>
                 </componentInstanceProperties>
                 <componentName>nextjsPortalHost</componentName>
                 <identifier>c_nextjsPortalHost</identifier>
