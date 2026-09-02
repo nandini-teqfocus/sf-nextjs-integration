@@ -10,6 +10,26 @@ export interface PartnerApplication {
   lastModifiedDate?: string;
 }
 
+export interface PaginationMetadata {
+  page: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface PaginatedApplicationsResponse {
+  records: PartnerApplication[];
+  pagination: PaginationMetadata;
+}
+
+export interface GetApplicationsOptions {
+  status?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface CreateApplicationPayload {
   applicantName: string;
   email: string;

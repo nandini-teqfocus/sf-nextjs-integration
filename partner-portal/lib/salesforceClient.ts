@@ -1,7 +1,14 @@
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
-import { PartnerApplication, CreateApplicationPayload, CreateApplicationResponse } from '@/types/portal';
+import {
+  PartnerApplication,
+  CreateApplicationPayload,
+  CreateApplicationResponse,
+  PaginationMetadata,
+  PaginatedApplicationsResponse,
+  GetApplicationsOptions,
+} from '@/types/portal';
 
 interface CachedToken {
   accessToken: string;
@@ -15,11 +22,9 @@ function getPrivateKey(): string {
   const rawKey = process.env.SF_PRIVATE_KEY || process.env.SALESFORCE_PRIVATE_KEY;
   if (rawKey && rawKey.trim()) {
     let keyStr = rawKey.trim();
-    // Remove surrounding quotes if present
     if ((keyStr.startsWith('"') && keyStr.endsWith('"')) || (keyStr.startsWith("'") && keyStr.endsWith("'"))) {
       keyStr = keyStr.slice(1, -1);
     }
-    // Replace literal escaped \n with actual newlines
     keyStr = keyStr.replace(/\\n/g, '\n');
     return keyStr;
   }
@@ -33,7 +38,6 @@ function getPrivateKey(): string {
     return fs.readFileSync(resolvedPath, 'utf8');
   }
 
-  // Check parent directory if running inside partner-portal
   const parentKeyPath = path.resolve(process.cwd(), '..', 'certs', 'server.key');
   if (fs.existsSync(parentKeyPath)) {
     return fs.readFileSync(parentKeyPath, 'utf8');
@@ -97,7 +101,7 @@ export async function getSalesforceAccessToken(forceRefresh = false): Promise<{ 
   }
 
   const data = await response.json();
-  const expiresInMs = 2 * 60 * 60 * 1000; // 2 hours default Salesforce session lifetime
+  const expiresInMs = 2 * 60 * 60 * 1000; // 2 hours session lifetime
 
   cachedToken = {
     accessToken: data.access_token,
@@ -112,13 +116,58 @@ export async function getSalesforceAccessToken(forceRefresh = false): Promise<{ 
   };
 }
 
-export async function getApplications(status?: string, retry = true): Promise<PartnerApplication[]> {
+function mapSalesforceRecord(rec: any): PartnerApplication {
+  return {
+    id: rec.Id,
+    name: rec.Name,
+    applicantName: rec.Applicant_Name__c || '',
+    email: rec.Email__c || '',
+    status: rec.Status__c || 'New',
+    requestedAmount: rec.Requested_Amount__c || 0,
+    notes: rec.Notes__c || '',
+    createdDate: rec.CreatedDate,
+    lastModifiedDate: rec.LastModifiedDate,
+  };
+}
+
+// Function overloads for backward compatibility and type-safety
+export async function getApplications(options: GetApplicationsOptions, retry?: boolean): Promise<PaginatedApplicationsResponse>;
+export async function getApplications(status?: string, retry?: boolean): Promise<PartnerApplication[]>;
+export async function getApplications(
+  optionsOrStatus?: string | GetApplicationsOptions,
+  retry = true
+): Promise<PartnerApplication[] | PaginatedApplicationsResponse> {
   const { accessToken, instanceUrl } = await getSalesforceAccessToken();
 
-  let endpoint = `${instanceUrl}/services/apexrest/v1/applications`;
-  if (status && status !== 'All') {
-    endpoint += `?status=${encodeURIComponent(status)}`;
+  let status: string | undefined;
+  let page: number | undefined;
+  let pageSize: number | undefined;
+  let isExplicitPagination = false;
+
+  if (typeof optionsOrStatus === 'string') {
+    status = optionsOrStatus;
+  } else if (optionsOrStatus && typeof optionsOrStatus === 'object') {
+    status = optionsOrStatus.status;
+    page = optionsOrStatus.page;
+    pageSize = optionsOrStatus.pageSize;
+    if (page !== undefined || pageSize !== undefined) {
+      isExplicitPagination = true;
+    }
   }
+
+  const queryParams = new URLSearchParams();
+  if (status && status !== 'All') {
+    queryParams.set('status', status);
+  }
+  if (page !== undefined && page !== null) {
+    queryParams.set('page', String(page));
+  }
+  if (pageSize !== undefined && pageSize !== null) {
+    queryParams.set('pageSize', String(pageSize));
+  }
+
+  const queryString = queryParams.toString();
+  const endpoint = `${instanceUrl}/services/apexrest/v1/applications${queryString ? `?${queryString}` : ''}`;
 
   const response = await fetch(endpoint, {
     method: 'GET',
@@ -132,25 +181,59 @@ export async function getApplications(status?: string, retry = true): Promise<Pa
   if (!response.ok) {
     if (response.status === 401 && retry) {
       cachedToken = null;
-      return getApplications(status, false);
+      return getApplications(optionsOrStatus as any, false);
     }
-    const errorText = await response.text();
-    throw new Error(`Apex REST GET failed (${response.status}): ${errorText}`);
+    const errorBody = await response.json().catch(() => ({}));
+    const errorMsg = errorBody.message || errorBody.error || `Apex REST GET failed (${response.status})`;
+    const error: any = new Error(errorMsg);
+    error.status = response.status;
+    error.errorCode = errorBody.error;
+    throw error;
   }
 
-  const rawRecords: any[] = await response.json();
+  const data: unknown = await response.json();
 
-  return rawRecords.map((rec) => ({
-    id: rec.Id,
-    name: rec.Name,
-    applicantName: rec.Applicant_Name__c || '',
-    email: rec.Email__c || '',
-    status: rec.Status__c || 'New',
-    requestedAmount: rec.Requested_Amount__c || 0,
-    notes: rec.Notes__c || '',
-    createdDate: rec.CreatedDate,
-    lastModifiedDate: rec.LastModifiedDate,
-  }));
+  // Normalize response: Flat array vs Paginated Envelope
+  if (Array.isArray(data)) {
+    const records = data.map(mapSalesforceRecord);
+    if (isExplicitPagination) {
+      return {
+        records,
+        pagination: {
+          page: page || 1,
+          pageSize: pageSize || 25,
+          totalRecords: records.length,
+          totalPages: Math.ceil(records.length / (pageSize || 25)) || 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      };
+    }
+    return records;
+  }
+
+  if (data && typeof data === 'object' && 'records' in data) {
+    const envelope = data as { records: any[]; pagination?: PaginationMetadata };
+    const mappedRecords = Array.isArray(envelope.records) ? envelope.records.map(mapSalesforceRecord) : [];
+
+    if (isExplicitPagination) {
+      return {
+        records: mappedRecords,
+        pagination: envelope.pagination || {
+          page: page || 1,
+          pageSize: pageSize || 25,
+          totalRecords: mappedRecords.length,
+          totalPages: Math.ceil(mappedRecords.length / (pageSize || 25)) || 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      };
+    }
+
+    return mappedRecords;
+  }
+
+  return [];
 }
 
 export async function createApplication(payload: CreateApplicationPayload, retry = true): Promise<CreateApplicationResponse> {
