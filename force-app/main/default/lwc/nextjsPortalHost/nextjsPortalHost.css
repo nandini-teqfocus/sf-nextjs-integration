@@ -1,0 +1,19 @@
+.portal-host-container {
+    width: 100%;
+    min-height: 500px;
+    background-color: transparent;
+}
+
+.nextjs-iframe {
+    width: 100%;
+    min-height: 600px;
+    border: none;
+    border-radius: 8px;
+    transition: height 0.2s ease-in-out;
+    display: block;
+}
+
+.loading-container {
+    min-height: 200px;
+    position: relative;
+}

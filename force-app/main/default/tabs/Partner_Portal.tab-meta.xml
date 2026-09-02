@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Partner Portal Host Page</description>
+    <flexiPage>Partner_Portal_Page</flexiPage>
+    <label>Partner Portal</label>
+    <motif>Custom68: Globe</motif>
+</CustomTab>

@@ -1,0 +1,18 @@
+<template>
+    <div class="portal-host-container">
+        <template lwc:if={iframeUrl}>
+            <iframe
+                class="nextjs-iframe"
+                src={iframeUrl}
+                allow="clipboard-write; camera; geolocation"
+                title="Partner Application Portal">
+            </iframe>
+        </template>
+        <template lwc:else>
+            <div class="loading-container slds-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="Loading Portal" size="medium"></lightning-spinner>
+                <p class="slds-m-top_small slds-text-color_weak">Initializing Next.js Partner Portal...</p>
+            </div>
+        </template>
+    </div>
+</template>

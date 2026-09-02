@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>nandini.singh.c2d90108260b@agentforce.com</contactEmail>
+    <label>Partner Portal Integration App</label>
+    <oauthConfig>
+        <callbackUrl>https://localhost:3000/api/auth/callback</callbackUrl>
+        <certificate>MIIDUzCCAjugAwIBAgIUYtZ5JivBJlKzPnBlEAxDNxuVixgwDQYJKoZIhvcNAQELBQAwOTEXMBUGA1UEAwwOcGFydG5lci1wb3J0YWwxETAPBgNVBAoMCFRlcWZvY3VzMQswCQYDVQQGEwJVUzAeFw0yNjA5MDIxMTEzMjBaFw0yNzA5MDIxMTEzMjBaMDkxFzAVBgNVBAMMDnBhcnRuZXItcG9ydGFsMREwDwYDVQQKDAhUZXFmb2N1czELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1Zq5ygsSAdHvgn4Q47iyoWP2keaVH6gg80ntJAYBB9Vs0eYU2qZY2TYbh2p3jVQXhrH9NjJgAXQP/tlixtFOqeSBukczYhDCrRPjP71jDiBU12ZtHDmnUpoDbzo48KRUPGXaPqN7qZRJS20r39zqEDC2Cd2UGPjzXJgGyh1iviD4SIWYqUn5YAr+YQQyC5ug4vVgpDQABsC40lJHExBDxv5x4j/+g+rpW88oJkDRWctG7hjmg2yneCEKn+TgR4o5ozOvDG7em4esvLa+exUtKD7nyznmpy4zLsbB+9Vhjq2Pvxhh8TKIRGM6ssRKB2XmC/1vBPuDxTK5LhcjuYtjNAgMBAAGjUzBRMB0GA1UdDgQWBBTzJqWAV8Lrx9p5gN23u/9xesjt8jAfBgNVHSMEGDAWgBTzJqWAV8Lrx9p5gN23u/9xesjt8jAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAEWCtAfLH14tpQtwt5SfT0iTGduB9gF49Jox5ekRvIz2CLfvd9XTgWcj0TsaRlB2YMuLPSbXLL3f71T24PaRsru760CS9PzN+1kB0EOw3UQ+kD1lWFOGSAMDxd1VYtDdqFSEJBA3Eyp+w939dol9DtYdssp6uQ597fjopi1cFYc93KvSKlBp8kY1hdiiQUTogK9uZHq9wVOPNVUH+14QR3YUtA0m4AEnvTYCVZI4SkOpeXZiT3gBuHs/VNPlme3ovDP9ZTt8PwIsBZ2AhI4RPfhIIciJ9KpYVX3fZ/4xJ89bx7WzdVABvyxAO+29tBHSaCj0XxVkDrpEPoDddO38cW</certificate>
+        <consumerKey>3MVG9VMBZCsTL9hlWoiX6TCiKzCNlZjlLWMIla0WRRQQ5T7oN680Q_sMHht.VoiBQJCnK9Hp6MhHpmvflpDbe</consumerKey>
+        <isAdminApproved>false</isAdminApproved>
+        <isClientCredentialEnabled>false</isClientCredentialEnabled>
+        <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
+        <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
+        <isConsumerSecretOptional>false</isConsumerSecretOptional>
+        <isIntrospectAllTokens>false</isIntrospectAllTokens>
+        <isNamedUserJwtEnabled>false</isNamedUserJwtEnabled>
+        <isPkceRequired>true</isPkceRequired>
+        <isRefreshTokenRotationEnabled>true</isRefreshTokenRotationEnabled>
+        <isSecretRequiredForRefreshToken>false</isSecretRequiredForRefreshToken>
+        <isSecretRequiredForTokenExchange>false</isSecretRequiredForTokenExchange>
+        <isTokenExchangeEnabled>false</isTokenExchangeEnabled>
+        <scopes>Api</scopes>
+        <scopes>RefreshToken</scopes>
+    </oauthConfig>
+    <oauthPolicy>
+        <ipRelaxation>ENFORCE</ipRelaxation>
+        <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
+        <refreshTokenPolicy>infinite</refreshTokenPolicy>
+    </oauthPolicy>
+</ConnectedApp>
