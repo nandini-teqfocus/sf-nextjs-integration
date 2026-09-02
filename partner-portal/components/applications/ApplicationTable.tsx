@@ -9,7 +9,7 @@ interface ApplicationTableProps {
 export default function ApplicationTable({ applications, isLoading = false }: ApplicationTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 p-12 text-center shadow-sm">
+      <div className="p-12 text-center">
         <div className="inline-block animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-3" />
         <p className="text-sm font-medium text-slate-500">Loading applications from Salesforce...</p>
       </div>
@@ -18,7 +18,7 @@ export default function ApplicationTable({ applications, isLoading = false }: Ap
 
   if (applications.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 p-12 text-center shadow-sm">
+      <div className="p-12 text-center">
         <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
           <Building2 className="w-6 h-6" />
         </div>
@@ -84,36 +84,34 @@ export default function ApplicationTable({ applications, isLoading = false }: Ap
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
-              <th className="py-3 px-4">Application #</th>
-              <th className="py-3 px-4">Applicant / Partner</th>
-              <th className="py-3 px-4">Email</th>
-              <th className="py-3 px-4">Requested Amount</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">Created Date</th>
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+            <th className="py-3 px-4">Application #</th>
+            <th className="py-3 px-4">Applicant / Partner</th>
+            <th className="py-3 px-4">Email</th>
+            <th className="py-3 px-4">Requested Amount</th>
+            <th className="py-3 px-4">Status</th>
+            <th className="py-3 px-4">Created Date</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {applications.map((app) => (
+            <tr key={app.id || app.name} className="hover:bg-slate-50/80 transition-colors">
+              <td className="py-3 px-4 font-semibold text-blue-600 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-slate-400" />
+                <span>{app.name || 'New'}</span>
+              </td>
+              <td className="py-3 px-4 font-medium text-slate-900">{app.applicantName}</td>
+              <td className="py-3 px-4 text-slate-500">{app.email}</td>
+              <td className="py-3 px-4 font-semibold text-slate-900">{formatCurrency(app.requestedAmount)}</td>
+              <td className="py-3 px-4">{getStatusBadge(app.status)}</td>
+              <td className="py-3 px-4 text-slate-400">{formatDate(app.createdDate)}</td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {applications.map((app) => (
-              <tr key={app.id || app.name} className="hover:bg-slate-50/80 transition-colors">
-                <td className="py-3 px-4 font-semibold text-blue-600 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{app.name || 'New'}</span>
-                </td>
-                <td className="py-3 px-4 font-medium text-slate-900">{app.applicantName}</td>
-                <td className="py-3 px-4 text-slate-500">{app.email}</td>
-                <td className="py-3 px-4 font-semibold text-slate-900">{formatCurrency(app.requestedAmount)}</td>
-                <td className="py-3 px-4">{getStatusBadge(app.status)}</td>
-                <td className="py-3 px-4 text-slate-400">{formatDate(app.createdDate)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

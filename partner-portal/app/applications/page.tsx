@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getApplications } from '@/lib/salesforceClient';
 import ApplicationsClient from '@/components/applications/ApplicationsClient';
-import { PartnerApplication } from '@/types/portal';
+import { PartnerApplication, PaginationMetadata } from '@/types/portal';
 import { PlusCircle } from 'lucide-react';
 
 export const runtime = 'nodejs';
@@ -14,14 +14,32 @@ export const metadata = {
 export default async function ApplicationsPage({
   searchParams,
 }: {
-  searchParams?: { status?: string };
+  searchParams?: { status?: string; page?: string; pageSize?: string };
 }) {
   let initialApplications: PartnerApplication[] = [];
+  let initialPagination: PaginationMetadata = {
+    page: 1,
+    pageSize: 25,
+    totalRecords: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+  };
   let initialError: string | null = null;
+
   const statusParam = searchParams?.status || 'All';
+  const pageParam = searchParams?.page ? parseInt(searchParams.page, 10) : 1;
+  const pageSizeParam = searchParams?.pageSize ? parseInt(searchParams.pageSize, 10) : 25;
 
   try {
-    initialApplications = await getApplications(statusParam);
+    const result = await getApplications({
+      status: statusParam,
+      page: isNaN(pageParam) ? 1 : pageParam,
+      pageSize: isNaN(pageSizeParam) ? 25 : pageSizeParam,
+    });
+
+    initialApplications = result.records;
+    initialPagination = result.pagination;
   } catch (err: any) {
     console.error('Server Component error fetching applications:', err.message);
     initialError = err.message || 'Failed to load applications from Salesforce';
@@ -39,7 +57,7 @@ export default async function ApplicationsPage({
         </div>
         <Link
           href="/applications/new"
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center gap-1.5 self-start sm:self-auto"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-all flex items-center gap-1.5 self-start sm:self-auto"
         >
           <PlusCircle className="w-3.5 h-3.5" /> Submit Application
         </Link>
@@ -48,6 +66,7 @@ export default async function ApplicationsPage({
       {/* Interactive Client View */}
       <ApplicationsClient
         initialApplications={initialApplications}
+        initialPagination={initialPagination}
         initialStatus={statusParam}
         initialError={initialError}
       />
